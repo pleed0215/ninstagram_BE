@@ -1,4 +1,11 @@
-import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
+import {
+  ArgsType,
+  Field,
+  InputType,
+  ObjectType,
+  PickType,
+} from '@nestjs/graphql';
+import { CommonModule } from 'src/common/common.module';
 import { CommonOutput } from 'src/common/dtos/common.dto';
 import { PaginatedOutput } from 'src/common/dtos/pagination.dto';
 import { User } from '../entity/user.entity';
@@ -7,7 +14,10 @@ import { User } from '../entity/user.entity';
 export class CreateUserInput extends PickType(User, [
   'username',
   'email',
-] as const) {}
+] as const) {
+  @Field(type => String)
+  password: string;
+}
 
 @ObjectType()
 export class CreateUserOutput extends CommonOutput {}
@@ -27,4 +37,19 @@ export class UserByIdOutput extends CommonOutput {
 export class UsersByUsernameOutput extends PaginatedOutput {
   @Field(type => [User], { nullable: true })
   users?: User;
+}
+
+@ArgsType()
+export class LoginInput {
+  @Field(type => String)
+  email: string;
+
+  @Field(type => String)
+  password: string;
+}
+
+@ObjectType()
+export class LoginOutput extends CommonOutput {
+  @Field(type => String, { nullable: true })
+  token?: string;
 }

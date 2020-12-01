@@ -10,7 +10,9 @@ type User {
   username: String!
   email: String!
   bio: String
+  verified: Boolean!
   followers: [User!]
+  state: UserState
   following: [User!]
 }
 
@@ -18,6 +20,12 @@ type User {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+enum UserState {
+  LOGOUT
+  LOGIN
+  SECRET
+}
 
 type CreateUserOutput {
   ok: Boolean!
@@ -30,15 +38,24 @@ type UserByIdOutput {
   user: User
 }
 
+type LoginOutput {
+  ok: Boolean!
+  error: String
+  token: String
+}
+
 type Query {
   userById(id: Float!): UserByIdOutput!
+  me: UserByIdOutput!
 }
 
 type Mutation {
   createUser(input: CreateUserInput!): CreateUserOutput!
+  login(email: String!, password: String!): LoginOutput!
 }
 
 input CreateUserInput {
   username: String!
   email: String!
+  password: String!
 }

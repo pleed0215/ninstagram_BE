@@ -7,9 +7,18 @@ import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entity/user.entity';
-import { UsersResolver } from './users/users.resolver';
+import { MailModule } from './mail/mail.module';
+import { Verification } from './users/entity/verification.entity';
+import { JwtModule } from './jwt/jwt.module';
+import { AuthModule } from './auth/auth.module';
 
 // SECRET_KEY=vxnK3hspvE6E4NCFtk9D2TZ3tdahtLuk
+// MAILGUN_APIK
+// EY=dc5227789785
+// 38be33a08b2a9e1
+// 9d7d7-4d6406
+// 32-2c4fe
+// b39
 
 @Module({
   imports: [
@@ -25,6 +34,10 @@ import { UsersResolver } from './users/users.resolver';
         POSTGRES_PORT: Joi.string().required(),
         POSTGRES_USER: Joi.string().required(),
         POSTGRES_PASSWORD: Joi.string().required(),
+        MAILGUN_APIKEY: Joi.string().required(),
+        MAILGUN_URL: Joi.string().required(),
+        MAILGUN_DOMAIN: Joi.string().required(),
+        MAILGUN_EMAIL: Joi.string().required(),
         DB_NAME: Joi.string().required(),
         SECRET_KEY: Joi.string().required(),
       }),
@@ -48,13 +61,30 @@ import { UsersResolver } from './users/users.resolver';
       database: `${process.env.DB_NAME}${
         process.env.NODE_ENV === 'test' ? '-test' : ''
       }`,
-      entities: [User],
+      entities: [User, Verification],
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: process.env.NODE_ENV === 'dev',
     }),
     CommonModule,
     UsersModule,
+    MailModule.forRoot({
+      mailgunApiKey: process.env.MAILGUN_APIKEY,
+      mailgunDomain: process.env.MAILGUN_DOMAIN,
+      mailgunEmail: process.env.MAILGUN_EMAIL,
+    }),
+    JwtModule.forRoot({ secretKey: process.env.SECRET_KEY }),
+    AuthModule,
   ],
   providers: [],
 })
 export class AppModule {}
+
+/*POSTGRES_PASSWORD=dldmsejr1
+POSTGRES_HOST=222.104.218.3
+POSTGRES_PORT=32788
+POSTGRES_USER=postgres
+DB_NAME=ninstagram
+MAILGUN_URL=https://api.mailgun.net/v3/sandbox857418504ffe4144bc9c19e3d65f2430.mailgun.org
+MAILGUN_DOMAIN=sandbox857418504ffe4144bc9c19e3d65f2430.mailgun.org
+MAILGUN_EMAIL=pleed0215@yoyang.io
+SECRET_KEY=vxnK3hspvE6E4NCFtk9D2TZ3tdahtLuk*/

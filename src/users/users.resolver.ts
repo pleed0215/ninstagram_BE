@@ -1,7 +1,11 @@
 import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
+import { AuthUser } from 'src/auth/auth.decorator';
+import { State } from 'src/auth/state.decorator';
 import {
   CreateUserInput,
   CreateUserOutput,
+  LoginInput,
+  LoginOutput,
   UserByIdOutput,
 } from './dtos/users.dto';
 import { User } from './entity/user.entity';
@@ -16,7 +20,19 @@ export class UsersResolver {
   }
 
   @Query(type => UserByIdOutput)
+  @State(['LOGIN_ANY'])
   userById(@Args('id') id: number): Promise<UserByIdOutput> {
     return this.service.getUser(id);
+  }
+
+  @Query(type => UserByIdOutput)
+  @State(['LOGIN_ANY'])
+  me(@AuthUser() user: User): Promise<UserByIdOutput> {
+    return this.service.getUser(user.id);
+  }
+
+  @Mutation(type => LoginOutput)
+  login(@Args() input: LoginInput): Promise<LoginOutput> {
+    return this.service.login(input);
   }
 }
