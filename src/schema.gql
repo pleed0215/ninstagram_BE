@@ -1,0 +1,44 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: Float!
+  createAt: DateTime!
+  updatedAt: DateTime!
+  avatar: String
+  username: String!
+  email: String!
+  bio: String
+  followers: [User!]
+  following: [User!]
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type CreateUserOutput {
+  ok: Boolean!
+  error: String
+}
+
+type UserByIdOutput {
+  ok: Boolean!
+  error: String
+  user: User
+}
+
+type Query {
+  userById(id: Float!): UserByIdOutput!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): CreateUserOutput!
+}
+
+input CreateUserInput {
+  username: String!
+  email: String!
+}

@@ -9,7 +9,7 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 export class User extends CoreEntity {
   @Field(type => String, { nullable: true })
   @Column({ nullable: true })
-  @IsUrl()
+  @IsString()
   avatar?: string;
 
   @Field(type => String)

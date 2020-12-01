@@ -7,6 +7,7 @@ import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entity/user.entity';
+import { UsersResolver } from './users/users.resolver';
 
 // SECRET_KEY=vxnK3hspvE6E4NCFtk9D2TZ3tdahtLuk
 
@@ -24,12 +25,13 @@ import { User } from './users/entity/user.entity';
         POSTGRES_PORT: Joi.string().required(),
         POSTGRES_USER: Joi.string().required(),
         POSTGRES_PASSWORD: Joi.string().required(),
+        DB_NAME: Joi.string().required(),
         SECRET_KEY: Joi.string().required(),
       }),
     }),
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
-      include: [User],
+      include: [UsersModule],
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: ({ req, connection }) => {
         return {
@@ -43,7 +45,12 @@ import { User } from './users/entity/user.entity';
       port: parseInt(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
+      database: `${process.env.DB_NAME}${
+        process.env.NODE_ENV === 'test' ? '-test' : ''
+      }`,
       entities: [User],
+      synchronize: process.env.NODE_ENV !== 'prod',
+      logging: process.env.NODE_ENV === 'dev',
     }),
     CommonModule,
     UsersModule,
