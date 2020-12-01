@@ -2,7 +2,9 @@ import {
   ArgsType,
   Field,
   InputType,
+  Int,
   ObjectType,
+  PartialType,
   PickType,
 } from '@nestjs/graphql';
 import { CommonModule } from 'src/common/common.module';
@@ -53,3 +55,11 @@ export class LoginOutput extends CommonOutput {
   @Field(type => String, { nullable: true })
   token?: string;
 }
+
+@InputType()
+export class UpdateProfileInput extends PartialType(
+  PickType(User, ['email', 'username', 'bio'] as const),
+) {}
+
+@ObjectType()
+export class UpdateProfileOutput extends CommonOutput {}

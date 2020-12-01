@@ -2,6 +2,46 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type MyPost {
+  id: Float!
+  createAt: DateTime!
+  updatedAt: DateTime!
+  location: String
+  caption: String!
+  writer: User!
+  likes: [Like!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Like {
+  id: Float!
+  createAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+  post: MyPost!
+}
+
+type Message {
+  id: Float!
+  createAt: DateTime!
+  updatedAt: DateTime!
+  from: User!
+  to: User!
+  chatRoom: ChatRoom!
+}
+
+type ChatRoom {
+  id: Float!
+  createAt: DateTime!
+  updatedAt: DateTime!
+  participants: [User!]!
+  messages: [Message!]
+}
+
 type User {
   id: Float!
   createAt: DateTime!
@@ -14,12 +54,10 @@ type User {
   followers: [User!]
   state: UserState
   following: [User!]
+  likes: [Like!]
+  posts: [MyPost!]
+  chatRooms: [ChatRoom!]
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 enum UserState {
   LOGOUT
@@ -44,6 +82,11 @@ type LoginOutput {
   token: String
 }
 
+type UpdateProfileOutput {
+  ok: Boolean!
+  error: String
+}
+
 type Query {
   userById(id: Float!): UserByIdOutput!
   me: UserByIdOutput!
@@ -52,10 +95,17 @@ type Query {
 type Mutation {
   createUser(input: CreateUserInput!): CreateUserOutput!
   login(email: String!, password: String!): LoginOutput!
+  updateProfile(input: UpdateProfileInput!): UpdateProfileOutput!
 }
 
 input CreateUserInput {
   username: String!
   email: String!
   password: String!
+}
+
+input UpdateProfileInput {
+  username: String
+  email: String
+  bio: String
 }

@@ -6,6 +6,8 @@ import {
   CreateUserOutput,
   LoginInput,
   LoginOutput,
+  UpdateProfileInput,
+  UpdateProfileOutput,
   UserByIdOutput,
 } from './dtos/users.dto';
 import { User } from './entity/user.entity';
@@ -34,5 +36,14 @@ export class UsersResolver {
   @Mutation(type => LoginOutput)
   login(@Args() input: LoginInput): Promise<LoginOutput> {
     return this.service.login(input);
+  }
+
+  @Mutation(type => UpdateProfileOutput)
+  @State(['LOGIN_ANY'])
+  updateProfile(
+    @AuthUser() user: User,
+    @Args('input') input: UpdateProfileInput,
+  ): Promise<UpdateProfileOutput> {
+    return this.service.updateProfile(user, input);
   }
 }

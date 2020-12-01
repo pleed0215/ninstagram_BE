@@ -13,11 +13,15 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
 import { Verification } from './verification.entity';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Like } from 'src/posts/entities/like.entity';
+import { MyPost } from 'src/posts/entities/post.entity';
+import { ChatRoom } from 'src/chats/entities/chatroom.entity';
 
 export enum UserState {
   LOGOUT = 'LOGOUT',
@@ -42,7 +46,7 @@ export class User extends CoreEntity {
   username: string;
 
   @Field(type => String)
-  @Column()
+  @Column({ unique: true })
   @IsEmail()
   email: string;
 
@@ -84,10 +88,36 @@ export class User extends CoreEntity {
   @OneToOne(
     type => Verification,
     verififcation => verififcation.user,
-    { cascade: true },
+    { cascade: true, nullable: true },
   )
   verification: Verification;
 
+  // relations
+  @OneToMany(
+    type => Like,
+    (like: Like) => like.user,
+    { nullable: true },
+  )
+  @Field(type => [Like], { nullable: true })
+  likes?: Like[];
+
+  @OneToMany(
+    type => MyPost,
+    (post: MyPost) => post.writer,
+    { nullable: true },
+  )
+  @Field(type => [MyPost], { nullable: true })
+  posts?: MyPost[];
+
+  @ManyToMany(
+    type => ChatRoom,
+    chatrooms => chatrooms.participants,
+    { nullable: true },
+  )
+  @Field(type => [ChatRoom], { nullable: true })
+  chatRooms: ChatRoom[];
+
+  // methods
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword(): Promise<void> {

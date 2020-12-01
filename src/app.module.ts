@@ -11,6 +11,12 @@ import { MailModule } from './mail/mail.module';
 import { Verification } from './users/entity/verification.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { AuthModule } from './auth/auth.module';
+import { PostsModule } from './posts/posts.module';
+import { ChatsModule } from './chats/chats.module';
+import { MyPost } from './posts/entities/post.entity';
+import { Like } from './posts/entities/like.entity';
+import { Message } from './chats/entities/message.entity';
+import { ChatRoom } from './chats/entities/chatroom.entity';
 
 // SECRET_KEY=vxnK3hspvE6E4NCFtk9D2TZ3tdahtLuk
 // MAILGUN_APIK
@@ -61,7 +67,7 @@ import { AuthModule } from './auth/auth.module';
       database: `${process.env.DB_NAME}${
         process.env.NODE_ENV === 'test' ? '-test' : ''
       }`,
-      entities: [User, Verification],
+      entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: process.env.NODE_ENV === 'dev',
     }),
@@ -74,6 +80,8 @@ import { AuthModule } from './auth/auth.module';
     }),
     JwtModule.forRoot({ secretKey: process.env.SECRET_KEY }),
     AuthModule,
+    PostsModule,
+    ChatsModule,
   ],
   providers: [],
 })

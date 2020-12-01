@@ -9,6 +9,8 @@ import {
   CreateUserOutput,
   LoginInput,
   LoginOutput,
+  UpdateProfileInput,
+  UpdateProfileOutput,
   UserByIdOutput,
 } from './dtos/users.dto';
 import { User } from './entity/user.entity';
@@ -97,6 +99,41 @@ export class UsersService {
       } else {
         throw Error(`User: ${user.email} password authentication is failed.`);
       }
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.toString(),
+      };
+    }
+  }
+
+  async updateProfile(
+    user: User,
+    { email, username, bio }: UpdateProfileInput,
+  ): Promise<UpdateProfileOutput> {
+    try {
+      if (username) user.username = username;
+      if (bio) user.bio = bio;
+      if (email) {
+        const verification = await this.verifications.save(
+          this.verifications.create(user),
+        );
+        user.email = email;
+        user.verified = false;
+        user.verification = verification;
+        await this.mailService.sendVerificationEmail(
+          email,
+          username,
+          HOST_NAME,
+          verification.code,
+        );
+      }
+
+      await this.users.save(user);
+
+      return {
+        ok: true,
+      };
     } catch (e) {
       return {
         ok: false,
