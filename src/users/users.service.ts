@@ -12,6 +12,7 @@ import {
   UpdateProfileInput,
   UpdateProfileOutput,
   UserByIdOutput,
+  VerfiyOutput,
 } from './dtos/users.dto';
 import { User } from './entity/user.entity';
 import { Verification } from './entity/verification.entity';
@@ -107,6 +108,28 @@ export class UsersService {
     }
   }
 
+  async verifyUser(code: string): Promise<VerfiyOutput> {
+    try {
+      const verification = await this.verifications.findOneOrFail(
+        { code },
+        { relations: ['user'] },
+      );
+      if (code === verification.code) {
+        await this.users.update(verification.userId, { verified: true });
+        await this.verifications.delete(verification.id);
+      }
+      return {
+        ok: true,
+        user: verification.user,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.toString(),
+      };
+    }
+  }
+
   async updateProfile(
     user: User,
     { email, username, bio }: UpdateProfileInput,
@@ -115,15 +138,20 @@ export class UsersService {
       if (username) user.username = username;
       if (bio) user.bio = bio;
       if (email) {
+        if (!user.verified)
+          throw Error(
+            `User: ${user.email} is not verified. Cannot change email address.`,
+          );
         const verification = await this.verifications.save(
-          this.verifications.create(user),
+          this.verifications.create({ user }),
         );
         user.email = email;
         user.verified = false;
         user.verification = verification;
+
         await this.mailService.sendVerificationEmail(
           email,
-          username,
+          user.username,
           HOST_NAME,
           verification.code,
         );

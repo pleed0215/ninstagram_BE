@@ -9,6 +9,8 @@ import {
   UpdateProfileInput,
   UpdateProfileOutput,
   UserByIdOutput,
+  VerfiyInput,
+  VerfiyOutput,
 } from './dtos/users.dto';
 import { User } from './entity/user.entity';
 import { UsersService } from './users.service';
@@ -45,5 +47,10 @@ export class UsersResolver {
     @Args('input') input: UpdateProfileInput,
   ): Promise<UpdateProfileOutput> {
     return this.service.updateProfile(user, input);
+  }
+
+  @Mutation(type => VerfiyOutput)
+  verify(@Args() { code }: VerfiyInput): Promise<VerfiyOutput> {
+    return this.service.verifyUser(code);
   }
 }

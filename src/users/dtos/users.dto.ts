@@ -63,3 +63,15 @@ export class UpdateProfileInput extends PartialType(
 
 @ObjectType()
 export class UpdateProfileOutput extends CommonOutput {}
+
+@ArgsType()
+export class VerfiyInput {
+  @Field(type => String)
+  code: string;
+}
+
+@ObjectType()
+export class VerfiyOutput extends CommonOutput {
+  @Field(type => User, { nullable: true })
+  user?: User;
+}

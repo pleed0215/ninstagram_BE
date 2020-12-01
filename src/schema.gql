@@ -87,6 +87,12 @@ type UpdateProfileOutput {
   error: String
 }
 
+type VerfiyOutput {
+  ok: Boolean!
+  error: String
+  user: User
+}
+
 type Query {
   userById(id: Float!): UserByIdOutput!
   me: UserByIdOutput!
@@ -96,6 +102,7 @@ type Mutation {
   createUser(input: CreateUserInput!): CreateUserOutput!
   login(email: String!, password: String!): LoginOutput!
   updateProfile(input: UpdateProfileInput!): UpdateProfileOutput!
+  verify(code: String!): VerfiyOutput!
 }
 
 input CreateUserInput {
