@@ -3,6 +3,8 @@ import { string } from 'joi';
 import { CoreEntity } from 'src/common/entity/core.entity';
 import { User } from 'src/users/entity/user.entity';
 import { Column, Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
+import { Comment } from './comment.entity';
+import { File } from './file.entity';
 import { Like } from './like.entity';
 
 @InputType('PostInputType', { isAbstract: true })
@@ -30,8 +32,22 @@ export class MyPost extends CoreEntity {
 
   @OneToMany(
     type => Like,
-    (like: Like) => like.user,
+    (like: Like) => like.post,
   )
-  @Field(type => [Like])
+  @Field(type => [Like], { nullable: true })
   likes?: Like[];
+
+  @OneToMany(
+    type => File,
+    (file: File) => file.post,
+  )
+  @Field(type => [File], { nullable: true })
+  files?: File[];
+
+  @OneToMany(
+    type => Comment,
+    (comment: Comment) => comment.post,
+  )
+  @Field(type => [Comment], { nullable: true })
+  comments?: Comment[];
 }

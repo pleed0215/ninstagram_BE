@@ -11,7 +11,7 @@ export class File extends CoreEntity {
   @Field(type => MyPost)
   @ManyToOne(
     type => MyPost,
-    (post: MyPost) => post.likes,
+    (post: MyPost) => post.files,
     { onDelete: 'CASCADE' },
   )
   post: MyPost;

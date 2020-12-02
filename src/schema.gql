@@ -2,6 +2,31 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Comment {
+  id: Float!
+  createAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+  post: MyPost!
+  text: String
+  parent: [Comment!]
+  replies: [Comment!]
+  hasReply: Boolean!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type File {
+  id: Float!
+  createAt: DateTime!
+  updatedAt: DateTime!
+  post: MyPost!
+  url: String!
+}
+
 type MyPost {
   id: Float!
   createAt: DateTime!
@@ -9,13 +34,10 @@ type MyPost {
   location: String
   caption: String!
   writer: User!
-  likes: [Like!]!
+  likes: [Like!]
+  files: [File!]
+  comments: [Comment!]
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type Like {
   id: Float!
@@ -48,15 +70,18 @@ type User {
   updatedAt: DateTime!
   avatar: String
   username: String!
+  firstName: String
+  lastName: String
   email: String!
   bio: String
   verified: Boolean!
   followers: [User!]
   state: UserState
-  following: [User!]
+  followings: [User!]
   likes: [Like!]
   posts: [MyPost!]
   chatRooms: [ChatRoom!]
+  comments: [Comment!]
 }
 
 enum UserState {
@@ -76,6 +101,15 @@ type UserByIdOutput {
   user: User
 }
 
+type UsersByTermOutput {
+  ok: Boolean!
+  error: String
+  totalCount: Int
+  totalPage: Int
+  currentPage: Int
+  users: [User!]
+}
+
 type LoginOutput {
   ok: Boolean!
   error: String
@@ -93,9 +127,130 @@ type VerfiyOutput {
   user: User
 }
 
+type ToggleFollowOutput {
+  ok: Boolean!
+  error: String
+  message: String
+}
+
+type FollowersOutput {
+  ok: Boolean!
+  error: String
+  followers: [User!]
+}
+
+type FollowingsOutput {
+  ok: Boolean!
+  error: String
+  followings: [User!]
+}
+
+type CreatePostOutput {
+  ok: Boolean!
+  error: String
+}
+
+type SeePostOutput {
+  ok: Boolean!
+  error: String
+  post: MyPost
+}
+
+type PostsOutput {
+  ok: Boolean!
+  error: String
+  totalCount: Int
+  totalPage: Int
+  currentPage: Int
+  posts: [MyPost!]
+}
+
+type UpdatePostOutput {
+  ok: Boolean!
+  error: String
+}
+
+type RemovePostOutput {
+  ok: Boolean!
+  error: String
+}
+
+type AddFilesOutput {
+  ok: Boolean!
+  error: String
+}
+
+type RemoveFilesOutput {
+  ok: Boolean!
+  error: String
+}
+
+type SeeFeedOutput {
+  ok: Boolean!
+  error: String
+  totalCount: Int
+  totalPage: Int
+  currentPage: Int
+  feed: [MyPost!]
+}
+
+type ToggleLikeOutput {
+  ok: Boolean!
+  error: String
+  message: String
+}
+
+type LikedPostsOutput {
+  ok: Boolean!
+  error: String
+  totalCount: Int
+  totalPage: Int
+  currentPage: Int
+  posts: [MyPost!]
+}
+
+type CreateCommentOutput {
+  ok: Boolean!
+  error: String
+}
+
+type CommentsOnPostOutput {
+  ok: Boolean!
+  error: String
+  comments: [Comment!]
+}
+
+type CommentsByUserOutput {
+  ok: Boolean!
+  error: String
+  comments: [Comment!]
+}
+
+type UpdateCommentOutput {
+  ok: Boolean!
+  error: String
+}
+
+type RemoveCommentOutput {
+  ok: Boolean!
+  error: String
+}
+
 type Query {
   userById(id: Float!): UserByIdOutput!
   me: UserByIdOutput!
+  searchByTerm(page: Int = 1, term: String!): UsersByTermOutput!
+  followers(id: Int!): FollowersOutput!
+  followings(id: Int!): FollowingsOutput!
+  seePost(id: Int!): SeePostOutput!
+  postsByTerm(page: Int = 1, term: String!): PostsOutput!
+  seeMyFeed(page: Int = 1): SeeFeedOutput!
+  seeFeed(page: Int = 1, id: Int!): SeeFeedOutput!
+  myLikedPosts(page: Int = 1): LikedPostsOutput!
+  likedPosts(page: Int = 1, id: Int!): LikedPostsOutput!
+  commentsOnPost: CommentsOnPostOutput!
+  commentsByUser: CommentsByUserOutput!
+  myComments: CommentsByUserOutput!
 }
 
 type Mutation {
@@ -103,16 +258,54 @@ type Mutation {
   login(email: String!, password: String!): LoginOutput!
   updateProfile(input: UpdateProfileInput!): UpdateProfileOutput!
   verify(code: String!): VerfiyOutput!
+  toggleFollow(id: Int!): ToggleFollowOutput!
+  createPost(input: CreatePostInput!): CreatePostOutput!
+  updatePost(input: UpdatePostInput!): UpdatePostOutput!
+  removePost(id: Int!): RemovePostOutput!
+  addFiles(postId: Int!, files: [String!]!): AddFilesOutput!
+  removeFiles(postId: Int!, fileIds: [Int!]!): RemoveFilesOutput!
+  toggleLike(id: Int!): ToggleLikeOutput!
+  createComment(input: CreateCommentInput!): CreateCommentOutput!
+  createReplyComment(input: CreateReplyCommentInput!): CreateCommentOutput!
+  removeComment(id: Int!): RemoveCommentOutput!
+  updateComment(id: Int!, text: String!): UpdateCommentOutput!
 }
 
 input CreateUserInput {
   username: String!
   email: String!
   password: String!
+  firstName: String
+  lastName: String
 }
 
 input UpdateProfileInput {
   username: String
+  firstName: String
+  lastName: String
   email: String
   bio: String
+}
+
+input CreatePostInput {
+  caption: String
+  location: String
+  files: [String!]!
+}
+
+input UpdatePostInput {
+  location: String
+  caption: String
+  id: Int!
+}
+
+input CreateCommentInput {
+  postId: Int!
+  text: String!
+}
+
+input CreateReplyCommentInput {
+  postId: Int!
+  replyId: Int!
+  text: String!
 }

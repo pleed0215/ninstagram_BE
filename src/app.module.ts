@@ -50,7 +50,7 @@ import { ChatRoom } from './chats/entities/chatroom.entity';
     }),
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
-      include: [UsersModule],
+      include: [UsersModule, PostsModule],
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: ({ req, connection }) => {
         return {

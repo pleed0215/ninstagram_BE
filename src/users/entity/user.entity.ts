@@ -22,6 +22,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Like } from 'src/posts/entities/like.entity';
 import { MyPost } from 'src/posts/entities/post.entity';
 import { ChatRoom } from 'src/chats/entities/chatroom.entity';
+import { Comment } from 'src/posts/entities/comment.entity';
 
 export enum UserState {
   LOGOUT = 'LOGOUT',
@@ -45,6 +46,16 @@ export class User extends CoreEntity {
   @IsString()
   username: string;
 
+  @Field(type => String, { nullable: true })
+  @Column({ nullable: true })
+  @IsString()
+  firstName: string;
+
+  @Field(type => String, { nullable: true })
+  @Column({ nullable: true })
+  @IsString()
+  lastName: string;
+
   @Field(type => String)
   @Column({ unique: true })
   @IsEmail()
@@ -64,7 +75,7 @@ export class User extends CoreEntity {
   @Field(type => [User], { nullable: true })
   @ManyToMany(
     type => User,
-    user => user.following,
+    user => user.followings,
   )
   @JoinTable()
   followers?: User[];
@@ -83,7 +94,7 @@ export class User extends CoreEntity {
     type => User,
     user => user.followers,
   )
-  following?: User[];
+  followings?: User[];
 
   @OneToOne(
     type => Verification,
@@ -116,6 +127,14 @@ export class User extends CoreEntity {
   )
   @Field(type => [ChatRoom], { nullable: true })
   chatRooms: ChatRoom[];
+
+  @OneToMany(
+    type => Comment,
+    comment => comment.user,
+    { nullable: true },
+  )
+  @Field(type => [Comment], { nullable: true })
+  comments: Comment[];
 
   // methods
   @BeforeInsert()
