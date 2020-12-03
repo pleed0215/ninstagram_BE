@@ -34,7 +34,7 @@ export class Comment extends CoreEntity {
   @Column({ nullable: true })
   text: string;
 
-  @Field(type => [Comment], { nullable: true })
+  @Field(type => Comment, { nullable: true })
   @ManyToOne(
     type => Comment,
     parent => parent.replies,

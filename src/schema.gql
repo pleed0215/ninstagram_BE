@@ -9,7 +9,7 @@ type Comment {
   user: User!
   post: MyPost!
   text: String
-  parent: [Comment!]
+  parent: Comment
   replies: [Comment!]
   hasReply: Boolean!
 }
@@ -53,6 +53,7 @@ type Message {
   updatedAt: DateTime!
   from: User!
   to: User!
+  text: String!
   chatRoom: ChatRoom!
 }
 
@@ -236,6 +237,18 @@ type RemoveCommentOutput {
   error: String
 }
 
+type SendMessageOutput {
+  ok: Boolean!
+  error: String
+}
+
+type SeeChatRoomOutput {
+  ok: Boolean!
+  error: String
+  messages: [Message!]
+  participants: [User!]
+}
+
 type Query {
   userById(id: Float!): UserByIdOutput!
   me: UserByIdOutput!
@@ -251,6 +264,7 @@ type Query {
   commentsOnPost: CommentsOnPostOutput!
   commentsByUser: CommentsByUserOutput!
   myComments: CommentsByUserOutput!
+  seeChatRoom(chatRoomId: Int!): SeeChatRoomOutput!
 }
 
 type Mutation {
@@ -269,6 +283,7 @@ type Mutation {
   createReplyComment(input: CreateReplyCommentInput!): CreateCommentOutput!
   removeComment(id: Int!): RemoveCommentOutput!
   updateComment(id: Int!, text: String!): UpdateCommentOutput!
+  sendMessage(input: SendMessageInput!): SendMessageOutput!
 }
 
 input CreateUserInput {
@@ -308,4 +323,13 @@ input CreateReplyCommentInput {
   postId: Int!
   replyId: Int!
   text: String!
+}
+
+input SendMessageInput {
+  toId: Int!
+  text: String!
+}
+
+type Subscription {
+  watingMessage: Message!
 }

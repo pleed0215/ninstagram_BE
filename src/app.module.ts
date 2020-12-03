@@ -40,6 +40,10 @@ import { ChatRoom } from './chats/entities/chatroom.entity';
         POSTGRES_PORT: Joi.string().required(),
         POSTGRES_USER: Joi.string().required(),
         POSTGRES_PASSWORD: Joi.string().required(),
+        MARIADB_HOST: Joi.string().required(),
+        MARIADB_PORT: Joi.string().required(),
+        MARIADB_USER: Joi.string().required(),
+        MARIADB_PASSWORD: Joi.string().required(),
         MAILGUN_APIKEY: Joi.string().required(),
         MAILGUN_URL: Joi.string().required(),
         MAILGUN_DOMAIN: Joi.string().required(),
@@ -50,7 +54,7 @@ import { ChatRoom } from './chats/entities/chatroom.entity';
     }),
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
-      include: [UsersModule, PostsModule],
+      include: [UsersModule, PostsModule, ChatsModule],
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: ({ req, connection }) => {
         return {
@@ -64,6 +68,11 @@ import { ChatRoom } from './chats/entities/chatroom.entity';
       port: parseInt(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
+      /*type: 'mariadb',
+      host: process.env.MARIADB_HOST,
+      port: parseInt(process.env.MARIADB_PORT),
+      username: process.env.MARIADB_USER,
+      password: process.env.MARIADB_PASSWORD,*/
       database: `${process.env.DB_NAME}${
         process.env.NODE_ENV === 'test' ? '-test' : ''
       }`,

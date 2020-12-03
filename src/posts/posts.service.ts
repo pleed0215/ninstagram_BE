@@ -453,7 +453,7 @@ export class PostsService {
         throw Error(
           `User: ${user.email} do not have permission to delete this comment.`,
         );
-      this.comments.delete(id);
+      await this.comments.delete(id);
       if (comment?.parent?.replies?.length === 1)
         this.comments.update(comment.parent.id, { hasReply: false });
 
