@@ -4,6 +4,7 @@ import { PubSub } from 'graphql-subscriptions';
 import { PUB_SUB } from 'src/common/common.contant';
 import { User } from 'src/users/entity/user.entity';
 import { In, Repository } from 'typeorm';
+import { TRIGGER_MESSAGE } from './chats.constant';
 import {
   SeeChatRoomInput,
   SeeChatRoomOutput,
@@ -47,7 +48,7 @@ export class ChatsService {
         chatRoom = await this.chatRooms.save(chatRoom);
       }
 
-      await this.messages.save(
+      const message = await this.messages.save(
         this.messages.create({
           to: toUser,
           from: authUser,
@@ -55,6 +56,10 @@ export class ChatsService {
           text,
         }),
       );
+
+      this.pubsub.publish(TRIGGER_MESSAGE, {
+        message,
+      });
 
       return {
         ok: true,

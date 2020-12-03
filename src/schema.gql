@@ -331,5 +331,5 @@ input SendMessageInput {
 }
 
 type Subscription {
-  watingMessage: Message!
+  watingMessage(chatRoomId: Int!): Message!
 }

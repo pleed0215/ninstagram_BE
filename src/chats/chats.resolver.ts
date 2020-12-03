@@ -1,5 +1,12 @@
 import { Inject } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query, Subscription } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Resolver,
+  Query,
+  Subscription,
+  Int,
+} from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 
 import { AuthUser } from 'src/auth/auth.decorator';
@@ -46,9 +53,14 @@ export class ChatRoomsResolver {
     return this.service.seeChatRoom(authUser, input);
   }
 
-  @Subscription(returns => Message, {})
+  @Subscription(returns => Message, {
+    filter: ({ message }, { chatRoomId }, { user }) =>
+      message.chatRoomId === chatRoomId &&
+      (message.from.id === user.id || message.to.id === user.id),
+    resolve: ({ message }) => message,
+  })
   @State(['LOGIN_ANY'])
-  watingMessage() {
+  watingMessage(@Args('chatRoomId', { type: () => Int }) roomId: number) {
     return this.pubsub.asyncIterator(TRIGGER_MESSAGE);
   }
 }
